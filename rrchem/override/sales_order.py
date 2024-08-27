@@ -9,6 +9,7 @@ from erpnext.setup.doctype.item_group.item_group import get_item_group_defaults
 from frappe.contacts.doctype.address.address import get_company_address
 from frappe.model.utils import get_fetch_values
 
+
 @frappe.whitelist()
 def make_sales_invoice(source_name, target_doc=None, ignore_permissions=False):
     # frappe.throw(f"{source_name}---{target_doc}")
@@ -97,3 +98,37 @@ def make_sales_invoice(source_name, target_doc=None, ignore_permissions=False):
         doclist.set_payment_schedule()
 
     return doclist
+
+
+
+
+
+@frappe.whitelist()
+def update_custom_conversion_description(sales_order_name):
+    # Fetch the Sales Order document
+    sales_order = frappe.get_doc("Sales Order", sales_order_name)
+    
+    # Iterate through each item in the Sales Order's items table
+    for item in sales_order.items:
+        if item.item_code:
+            # Fetch the corresponding Item document
+            item_doc = frappe.get_doc("Item", item.item_code)
+            
+            # Check if the item has the required custom fields
+            if item_doc.custom_selling_conversion_uom and item_doc.custom_selling_conversion_qty:
+                # Calculate the conversion description
+                calculated_qty = item.qty / item_doc.custom_selling_conversion_qty
+                formatted_qty = round(calculated_qty, 2)  # Round to 2 decimal places
+                description = f"{formatted_qty} {item_doc.custom_selling_conversion_uom} X {item_doc.custom_selling_conversion_qty} {item.stock_uom}"
+                
+                # Update the custom_conversion_description field
+                item.custom_conversion_description = description
+
+    # Save the Sales Order document after updating the items
+    sales_order.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    # Return a success message
+    return f"Custom conversion descriptions updated for Sales Order: {sales_order_name}"
+
+
