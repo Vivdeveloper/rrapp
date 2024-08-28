@@ -17,7 +17,7 @@ frappe.ui.form.on('Sales Order', {
             flt(frm.doc.per_billed, 2) < 100 &&
             frm.has_perm("write")
         ) {
-            frm.add_custom_button(__("Update Items"), () => {
+            frm.add_custom_button(__("Update Items  "), () => {
                 console.log("hello");
 
                 update_sales_order_items({
