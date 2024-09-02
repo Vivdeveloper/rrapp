@@ -26,7 +26,7 @@ erpnext.LeadController = class LeadController extends frappe.ui.form.Controller 
 
         // Add Quotation button if the Lead is not new and not already a customer
         if (!this.frm.is_new() && doc.__onload && !doc.__onload.is_customer) {
-            this.frm.add_custom_button(__("Trial"), this.make_quotation.bind(this), __("Create"));
+            this.frm.add_custom_button(__("Quotation  "), this.make_quotation.bind(this), __("Create"));
         }
     }
 
